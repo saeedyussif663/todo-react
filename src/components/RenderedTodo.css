@@ -1,0 +1,21 @@
+
+ul {
+    margin-top: 15px;
+    width: 80%;
+    
+}
+
+ul li {
+    border: 1px solid black;
+    height: 40px;
+    font-size: 1.5rem;
+    text-align: center;
+    padding-top: 5px;
+    margin-bottom: 10px;
+    list-style: none;
+    cursor: pointer;
+}
+
+ul input {
+    margin-right: 15px;
+}
