@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import './ConfirmationModal.css'
 
-const ConfirmationModal = ({onDelete, onShowModal, onShowTodo}) => {
+const ConfirmationModal = ({onDelete, onShowTodo}) => {
   
     const deleteHandler = () => {
         onDelete();

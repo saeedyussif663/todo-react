@@ -1,5 +1,4 @@
 
-import Card from '../UI/Card';
 import './RenderedUsers.css'
 
 

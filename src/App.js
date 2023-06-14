@@ -11,12 +11,14 @@ import Todo from './components/Todo';
 function App() {
 
   const [users, setUsers] = useState([]);
+  const [todos, setTodos] = useState([]);
   const [item, setItem] = useState('');
   const [inputModalIsClosed, setInputModalIsClosed] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [individualTodo, setIndividualTodo] = useState(false);
   const [itemToBeDisplalyed, setItemToBeDisplayed] = useState('');
   const [checkedState, setCheckedState] = useState(false)
+
   
 
 
@@ -26,7 +28,6 @@ function App() {
     return [...prevState, {
       id: Math.random(),
       name: data,
-      todos: [],
     }]
   })
   
@@ -55,49 +56,59 @@ const deleteModal = () => {
   }
 
   const addTodo = (input) => {
-    const updateUsersArray = users.map((user) => {
-      if (user.id === item.id) {
-       user.todos.push({id: Math.random(), task: input, selected: false});
-        return  user;
-        
+  setTodos((prevState) => {
+    return [...prevState, {id: Math.random(), task: input, selected: false, name: item.name}]
+  })
+  }
+    
+
+  const handleItemClick = (idToMatch) => {
+    const updatedTodo = todos.map(obj => {
+      if (obj.id === idToMatch) {
+          return {...obj, selected: !obj.selected}
       }
-      return user;
+      return obj
     })
-    setUsers(updateUsersArray);
+    setTodos(updatedTodo)
   }
 
-  const handleItemClick = (id) => {
-    const updatedData = users.map(item => {
-      if (item.todos.some(todo => todo.id === id)) {
-        return {
-          ...item,
-          todos: item.todos.map(todo => {
-            if (todo.id === id) {
-              setCheckedState(!todo.selected)
-              return { ...todo, selected: !todo.selected }
-            }
-            return todo;
-          })
-        };
-      }
-      return item;
-    });
-    setUsers(updatedData);
-    console.log(users);
+  const storeTodosToLocalStorage = (todos) => {
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
 
+  const storeUsersToLocalStorage = (todos) => {
+    localStorage.setItem("users", JSON.stringify(users));
+  }
+
+
+
+useEffect(() => {
+  const todos = localStorage.getItem("todos");
+  const users = localStorage.getItem("users");
+  if (todos) {
+    setTodos(JSON.parse(todos));
+  };
+  if (users) {
+    setUsers(JSON.parse(users))
+  }
+}, [])
+
+  useEffect(() => {
+    storeTodosToLocalStorage(todos);
+    storeUsersToLocalStorage(users)
+  }, [todos, users])
   
 
 
   return (
     <div>
       {inputModalIsClosed &&<InputModal toggleModal={toggleInputModal} users={users} takeUserData={takeUserData}/>}
-      {showConfirmationModal && <ConfirmationModal onDelete={deleteModal} onShowModal={showConfirmaitonModalHandler} onShowTodo={showIndividualTodo} item={item}/>}
+      {showConfirmationModal && <ConfirmationModal onDelete={deleteModal} onShowTodo={showIndividualTodo} item={item}/>}
       <div className='container'>
       <Interface toggleModal={toggleInputModal}/>
       <RenderedUsers users={users} onDelete={showConfirmaitonModalHandler}/>
       </div>
-      {individualTodo && <Todo users={item} onHandleClick={handleItemClick} onAdd={addTodo} onChecked={handleItemClick} onCheckValue={checkedState}/>}
+      {individualTodo && <Todo users={item} onHandleClick={handleItemClick} onAdd={addTodo} onChecked={handleItemClick} onCheckValue={checkedState} onTodos={todos} onDisplay={itemToBeDisplalyed}/>}
     </div>
   );
 }
